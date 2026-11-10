@@ -1,0 +1,1165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Silverswipers Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: #1E2B2A; font-family: Lexend, system-ui, sans-serif; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+  .bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; padding: 10px 16px; }
+  .bar label { font-size: 14px; color: #C9D8D6; }
+  .bar select, .bar button { font: inherit; font-size: 15px; min-height: 40px; border-radius: 10px; border: 1px solid #4A5A58; background: #2C3B3A; color: #FFFFFF; padding: 0 12px; cursor: pointer; }
+  .stage { flex: 1; width: 100%; display: flex; align-items: flex-start; justify-content: center; min-height: 0; }
+  .phone-wrap { transform-origin: top center; }
+  .phone { width: 390px; height: 844px; border-radius: 44px; overflow: hidden; background: #F4F8F7; box-shadow: 0 0 0 10px #0B1211, 0 20px 60px rgba(0,0,0,0.5); position: relative; }
+  #screen { width: 390px; height: 844px; }
+  #screen a { color: #0E4D4A; }
+  #screen button { font-family: inherit; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <label for="jump">Jump to screen</label>
+  <select id="jump"><option value="Verify">1 · Welcome + Singpass</option><option value="Main">2 · AI voice interview</option><option value="Profile">3 · Profile</option><option value="Match">4 · Swipe to match</option><option value="Chat">5 · Chat</option><option value="Game">6 · Word Hunt</option><option value="Meetup">7 · Meet in person</option><option value="Chats">8 · My chats</option><option value="Safety">9 · Scam check</option><option value="Friends">10 · My friends</option><option value="Games">11 · Games</option><option value="Meetups">12 · Meetups</option></select>
+  <button type="button" id="restart">Start again</button>
+</div>
+<div class="stage"><div class="phone-wrap" id="wrap"><div class="phone"><div id="screen"></div></div></div></div>
+
+<template id="tpl-Verify"><div style="width: 390px; height: 844px; box-sizing: border-box; background: #F4F8F7; font-family: Lexend, system-ui, sans-serif; color: #12201F; display: flex; flex-direction: column; padding: 28px 24px 26px">
+  <div style="display: flex; align-items: center; gap: 10px">
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="13" cy="17" r="10" fill="none" stroke="#0E4D4A" stroke-width="3"></circle><circle cx="21" cy="17" r="10" fill="none" stroke="#E8833A" stroke-width="3"></circle></svg>
+    <span style="font-size: 20px; font-weight: 700; color: #0E4D4A">Silverswipers</span>
+  </div>
+
+  <h1 style="margin: 24px 0 4px; font-size: 30px; font-weight: 700">Welcome!</h1>
+  <p style="margin: 0; font-size: 18px; color: #4A5A58">Which language do you want to use?</p>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 16px">
+    <sc-for list="{{langs}}" as="l" hint-placeholder-count="4">
+      <button type="button" onClick="{{l.pick}}" aria-pressed="{{l.pressed}}" style="{{l.style}}">{{l.label}}</button>
+    </sc-for>
+  </div>
+
+  <div style="margin-top: 22px; background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <div style="width: 52px; height: 52px; border-radius: 16px; background: #E5F1EF; color: #0E4D4A; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg>
+      </div>
+      <p style="margin: 0; font-size: 21px; font-weight: 600; line-height: 1.3">Show you are a real person</p>
+    </div>
+    <p style="margin: 0; font-size: 17px; line-height: 1.45; color: #2D3B3A">Everyone on Silverswipers checks in with Singpass. This keeps out fake profiles and scammers.</p>
+    <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 16px; line-height: 1.4; color: #2D3B3A">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2F6B4F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px"><path d="M5 12l5 5 9-10"></path></svg>
+      <span>Friends only see your name, age and town</span>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 16px; line-height: 1.4; color: #2D3B3A">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2F6B4F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px"><path d="M5 12l5 5 9-10"></path></svg>
+      <span>Your NRIC number is never shown to anyone</span>
+    </div>
+  </div>
+
+  <div style="flex: 1"></div>
+
+  <a href="Main.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 10px; height: 64px; border-radius: 18px; background: #0E4D4A; color: #FFFFFF; font-size: 21px; font-weight: 600; text-decoration: none">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6z"></path></svg>Verify with Singpass</a>
+  <p style="margin: 14px 0 0; font-size: 16px; line-height: 1.4; text-align: center; color: #4A5A58">Need help? Staff at your Active Ageing Centre can do this with you.</p>
+</div></template>
+<template id="tpl-Main"><div style="width: 390px; height: 844px; box-sizing: border-box; background: #F4F8F7; font-family: Lexend, system-ui, sans-serif; color: #12201F; display: flex; flex-direction: column; padding: 24px 24px 26px">
+  <div style="display: flex; align-items: center; justify-content: space-between">
+    <div style="display: flex; align-items: center; gap: 10px">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="13" cy="17" r="10" fill="none" stroke="#0E4D4A" stroke-width="3"></circle><circle cx="21" cy="17" r="10" fill="none" stroke="#E8833A" stroke-width="3"></circle></svg>
+      <span style="font-size: 20px; font-weight: 700; color: #0E4D4A">Silverswipers</span>
+    </div>
+    <div style="position: relative">
+      <button type="button" onClick="{{toggleLang}}" aria-expanded="{{langOpen}}" aria-label="Change language" style="min-height: 44px; padding: 0 12px; border-radius: 22px; border: 2px solid #B9CCC9; background: #FFFFFF; font-size: 16px; color: #12201F; display: flex; align-items: center; gap: 6px; cursor: pointer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E4D4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"></path></svg>{{langLabel}}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+      </button>
+      <sc-if value="{{langOpenBool}}" hint-placeholder-val="{{false}}">
+        <div style="position: absolute; right: 0; top: 52px; z-index: 5; width: 210px; background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 18px; padding: 6px; box-shadow: 0 8px 24px rgba(18,32,31,0.15); display: flex; flex-direction: column; gap: 2px">
+          <sc-for list="{{langs}}" as="l" hint-placeholder-count="4">
+            <button type="button" onClick="{{l.pick}}" style="{{l.style}}">{{l.label}}</button>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px; margin-top: 18px">
+    <div style="flex: 1; height: 8px; border-radius: 4px; background: #D3E0DE; overflow: hidden" aria-hidden="true">
+      <div style="width: 50%; height: 8px; background: #0E4D4A"></div>
+    </div>
+    <span style="font-size: 16px; color: #4A5A58">Question 3 of 6</span>
+  </div>
+
+  <div style="display: flex; flex-direction: column; align-items: center; margin-top: 14px">
+    <div style="width: 150px; height: 150px; border-radius: 75px; background: {{ring2}}; display: flex; align-items: center; justify-content: center" aria-hidden="true">
+      <div style="width: 120px; height: 120px; border-radius: 60px; background: {{ring1}}; display: flex; align-items: center; justify-content: center">
+        <div style="width: 88px; height: 88px; border-radius: 44px; background: #0E4D4A; display: flex; align-items: center; justify-content: center; gap: 6px">
+          <div style="width: 8px; height: {{b1}}px; border-radius: 4px; background: #FFFFFF"></div>
+          <div style="width: 8px; height: {{b2}}px; border-radius: 4px; background: #FFFFFF"></div>
+          <div style="width: 8px; height: {{b3}}px; border-radius: 4px; background: #FFFFFF"></div>
+          <div style="width: 8px; height: {{b2}}px; border-radius: 4px; background: #FFFFFF"></div>
+          <div style="width: 8px; height: {{b1}}px; border-radius: 4px; background: #FFFFFF"></div>
+        </div>
+      </div>
+    </div>
+    <p style="margin: 8px 0 0; font-size: 20px; font-weight: 600">Sunny</p>
+    <p style="margin: 2px 0 0; font-size: 16px; color: #4A5A58">{{status}}</p>
+  </div>
+
+  <div style="margin-top: 10px; background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 22px; padding: 12px 16px">
+    <p style="margin: 0; font-size: 15px; color: #4A5A58">Sunny asked</p>
+    <p style="margin: 4px 0 0; font-size: 21px; line-height: 1.4; font-weight: 500">“What do you usually like to do on weekends, Uncle Tan?”</p>
+  </div>
+
+  <div style="margin-top: 10px; background: #E5F1EF; border-radius: 22px; padding: 12px 16px">
+    <p style="margin: 0; font-size: 15px; color: #2F5F5B">You said</p>
+    <p style="margin: 4px 0 0; font-size: 19px; line-height: 1.45; color: #0E3B39">“Saturday I play mahjong with my old colleagues. Sunday I go wet market, then water my plants...”</p>
+  </div>
+
+  <div style="flex: 1"></div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between">
+    <button type="button" aria-label="Pause the interview" style="width: 64px; height: 64px; border-radius: 32px; border: 2px solid #B9CCC9; background: #FFFFFF; color: #2D3B3A; display: flex; align-items: center; justify-content: center">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 5v14M15 5v14"></path></svg>
+    </button>
+    <button type="button" onClick="{{toggle}}" aria-pressed="{{pressed}}" aria-label="{{micLabel}}" style="width: 96px; height: 96px; border-radius: 48px; border: none; background: {{micBg}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0014 0M12 18v3"></path></svg>
+    </button>
+    <a href="Profile.dc.html" aria-label="Next" style="width: 64px; height: 64px; border-radius: 32px; border: 2px solid #0E4D4A; background: #E5F1EF; color: #0E4D4A; display: flex; align-items: center; justify-content: center">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+    </a>
+  </div>
+  <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 15px; color: #2D3B3A; text-align: center">
+    <span style="width: 64px">Pause</span>
+    <span style="width: 96px">Tap to talk</span>
+    <span style="width: 64px; font-weight: 600; color: #0E4D4A">Next</span>
+  </div>
+  <a href="#" style="display: block; margin-top: 4px; padding: 6px 0; text-align: center; font-size: 16px; color: #0E4D4A">Prefer to type instead</a>
+  
+</div></template>
+<template id="tpl-Profile"><div style="width: 390px; height: 844px; box-sizing: border-box; background: #F4F8F7; font-family: Lexend, system-ui, sans-serif; color: #12201F; display: flex; flex-direction: column; padding: 28px 22px 26px">
+  <div style="display: flex; align-items: center; gap: 12px">
+    <div style="width: 52px; height: 52px; border-radius: 26px; background: #0E4D4A; display: flex; align-items: center; justify-content: center; gap: 3px; flex-shrink: 0" aria-hidden="true">
+      <div style="width: 5px; height: 10px; border-radius: 3px; background: #FFFFFF"></div>
+      <div style="width: 5px; height: 18px; border-radius: 3px; background: #FFFFFF"></div>
+      <div style="width: 5px; height: 10px; border-radius: 3px; background: #FFFFFF"></div>
+    </div>
+    <p style="margin: 0; font-size: 18px; line-height: 1.4; color: #2D3B3A">Thank you for chatting, Uncle Tan! Here is what I learned.</p>
+  </div>
+
+  <h1 style="margin: 22px 0 14px; font-size: 28px; font-weight: 700">Is this you?</h1>
+
+  <div style="background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 24px; padding: 6px 18px">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid #E5ECEB">
+      <div>
+        <p style="margin: 0; font-size: 15px; color: #4A5A58">You enjoy</p>
+        <p style="margin: 3px 0 0; font-size: 19px; line-height: 1.4">Mahjong, gardening, going to the wet market</p>
+      </div>
+      <a href="#" style="font-size: 16px; padding: 10px 0; flex-shrink: 0">Change</a>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid #E5ECEB">
+      <div>
+        <p style="margin: 0; font-size: 15px; color: #4A5A58">You speak</p>
+        <p style="margin: 3px 0 0; font-size: 19px; line-height: 1.4">Mandarin, Hokkien, some English</p>
+      </div>
+      <a href="#" style="font-size: 16px; padding: 10px 0; flex-shrink: 0">Change</a>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid #E5ECEB">
+      <div>
+        <p style="margin: 0; font-size: 15px; color: #4A5A58">Your sense of humour</p>
+        <p style="margin: 3px 0 0; font-size: 19px; line-height: 1.4">Loves teasing and jokes</p>
+      </div>
+      <a href="#" style="font-size: 16px; padding: 10px 0; flex-shrink: 0">Change</a>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 14px 0">
+      <div>
+        <p style="margin: 0; font-size: 15px; color: #4A5A58">How you like to chat</p>
+        <p style="margin: 3px 0 0; font-size: 19px; line-height: 1.4">Voice messages, in the morning</p>
+      </div>
+      <a href="#" style="font-size: 16px; padding: 10px 0; flex-shrink: 0">Change</a>
+    </div>
+  </div>
+
+  <div style="margin-top: 14px; background: #FFF6EE; border: 2px solid #F3C9A4; border-radius: 20px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7A3A0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6z"></path></svg>
+    <p style="margin: 0; font-size: 16px; line-height: 1.4; color: #5C2C08">Only this summary is shown to others. Your voice recording is not shared.</p>
+  </div>
+
+  <div style="flex: 1"></div>
+
+  <a href="Match.dc.html" style="display: flex; align-items: center; justify-content: center; height: 64px; border-radius: 18px; background: #0E4D4A; color: #FFFFFF; font-size: 21px; font-weight: 600; text-decoration: none">Yes, find me friends</a>
+  <a href="Main.dc.html" style="display: block; margin-top: 14px; text-align: center; font-size: 18px; color: #0E4D4A">Talk to Sunny again</a>
+</div></template>
+<template id="tpl-Match"><div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #F4F8F7; font-family: Lexend, system-ui, sans-serif; color: #12201F; display: flex; flex-direction: column; overflow: hidden">
+  <div style="padding: 24px 24px 0">
+    <p style="margin: 0; font-size: 17px; color: #4A5A58">Good morning, Uncle Tan</p>
+    <h1 style="margin: 2px 0 0; font-size: 27px; font-weight: 700">Someone you may like</h1>
+    <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 15px; color: #4A5A58">
+      <span>← Swipe left to skip</span>
+      <span>Swipe right to say hello →</span>
+    </div>
+  </div>
+
+  <div style="position: relative; margin: 10px 20px 0; height: 500px">
+    <div style="position: absolute; left: 12px; right: 12px; top: 12px; bottom: -8px; background: #E5ECEB; border-radius: 28px" aria-hidden="true"></div>
+
+    <sc-if value="{{hasCard}}" hint-placeholder-val="{{true}}">
+      <div onPointerDown="{{down}}" onPointerMove="{{move}}" onPointerUp="{{up}}" onPointerCancel="{{up}}" style="position: absolute; inset: 0; box-sizing: border-box; background: #FFFFFF; border-radius: 28px; border: 2px solid #DCE7E5; padding: 20px; display: flex; flex-direction: column; gap: 14px; touch-action: none; user-select: none; cursor: grab; box-shadow: 0 6px 18px rgba(18,32,31,0.08); transform: {{tf}}; transition: {{tr}}">
+        <sc-if value="{{showHello}}" hint-placeholder-val="{{false}}">
+          <span style="position: absolute; top: 22px; right: 20px; padding: 6px 14px; border: 3px solid #0E4D4A; color: #0E4D4A; border-radius: 12px; font-size: 20px; font-weight: 700; transform: rotate(8deg); background: #FFFFFF">HELLO!</span>
+        </sc-if>
+        <sc-if value="{{showSkip}}" hint-placeholder-val="{{false}}">
+          <span style="position: absolute; top: 22px; right: 20px; padding: 6px 14px; border: 3px solid #4A5A58; color: #4A5A58; border-radius: 12px; font-size: 20px; font-weight: 700; transform: rotate(-8deg); background: #FFFFFF">SKIP</span>
+        </sc-if>
+        <div style="display: flex; align-items: center; gap: 14px">
+          <div style="width: 80px; height: 80px; border-radius: 40px; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700; flex-shrink: 0; background: {{p.bg}}; color: {{p.fg}}" role="img" aria-label="Profile photo">{{p.initials}}</div>
+          <div>
+            <p style="margin: 0; font-size: 25px; font-weight: 700">{{p.name}}</p>
+            <p style="margin: 2px 0 0; font-size: 17px; color: #4A5A58">Lives in {{p.town}}</p>
+            <p style="margin: 6px 0 0; display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; color: #2F6B4F">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg>Singpass verified</p>
+          </div>
+        </div>
+        <div style="background: #E5F1EF; border-radius: 18px; padding: 12px 14px">
+          <p style="margin: 0; font-size: 17px; line-height: 1.4; color: #0E3B39"><b>Why we matched you:</b> {{p.why}}</p>
+        </div>
+        <p style="margin: 0; font-size: 18px; line-height: 1.45">“{{p.quote}}”</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <sc-for list="{{p.tags}}" as="t" hint-placeholder-count="4">
+            <span style="padding: 7px 13px; border-radius: 18px; background: #F1F4F3; font-size: 15px; color: #2D3B3A">{{t}}</span>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{noCard}}" hint-placeholder-val="{{false}}">
+      <div style="position: absolute; inset: 0; box-sizing: border-box; background: #FFFFFF; border-radius: 28px; border: 2px solid #DCE7E5; padding: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center">
+        <p style="margin: 0; font-size: 24px; font-weight: 700">That's all for today</p>
+        <p style="margin: 0; font-size: 18px; line-height: 1.45; color: #4A5A58">Come back tomorrow to meet new friends.</p>
+        <button type="button" onClick="{{restart}}" style="margin-top: 8px; min-height: 52px; padding: 0 22px; border-radius: 16px; border: 2px solid #B9CCC9; background: #FFFFFF; font-size: 18px; color: #0E4D4A; cursor: pointer">See again</button>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="display: flex; gap: 14px; padding: 20px 20px 0">
+    <button type="button" onClick="{{skip}}" style="flex: 1; height: 62px; border-radius: 18px; border: 2px solid #B9CCC9; background: #FFFFFF; color: #2D3B3A; font-size: 20px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Skip</button>
+    <button type="button" onClick="{{hello}}" style="flex: 1.4; height: 62px; border-radius: 18px; border: none; background: #0E4D4A; color: #FFFFFF; font-size: 20px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11V7a2 2 0 014 0v3M11 10V5a2 2 0 014 0v5M15 10V7a2 2 0 014 0v6a7 7 0 01-7 7h-1a6 6 0 01-5-3l-2.5-4a1.8 1.8 0 013-2L7 13"></path></svg>Say hello</button>
+  </div>
+  <p style="margin: 10px 24px 0; min-height: 22px; font-size: 16px; text-align: center; color: #2F6B4F">{{toast}}</p>
+
+  <div style="flex: 1"></div>
+
+  <nav aria-label="Main" style="display: flex; background: #FFFFFF; border-top: 1px solid #DCE7E5; padding: 10px 6px 16px">
+    <a href="Friends.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #0E4D4A; text-decoration: none; font-size: 15px; font-weight: 600">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0113 0"></path><circle cx="17" cy="9" r="2.8"></circle><path d="M16 14.2a5 5 0 016 4.8"></path></svg>Friends</a>
+    <a href="Chats.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>Chats</a>
+    <a href="Games.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="11" rx="4"></rect><path d="M8 10.5v4M6 12.5h4"></path><circle cx="15.5" cy="11.5" r="0.8"></circle><circle cx="17.5" cy="13.8" r="0.8"></circle></svg>Games</a>
+    <a href="Meetups.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Meetups</a>
+  </nav>
+
+  <sc-if value="{{matched}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; background: rgba(14,77,74,0.92); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; gap: 16px; text-align: center; color: #FFFFFF">
+      <div style="display: flex">
+        <div style="width: 84px; height: 84px; border-radius: 42px; background: #D7EBE7; color: #0E4D4A; border: 4px solid #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700" role="img" aria-label="You">UT</div>
+        <div style="width: 84px; height: 84px; border-radius: 42px; background: #FDE9D8; color: #7A3A0B; border: 4px solid #FFFFFF; margin-left: -18px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700" role="img" aria-label="Mdm Lim">ML</div>
+      </div>
+      <p style="margin: 0; font-size: 30px; font-weight: 700">New friend!</p>
+      <p style="margin: 0; font-size: 19px; line-height: 1.45">You and Mdm Lim both said hello. Now you can chat.</p>
+      <a href="Chat.dc.html" style="margin-top: 8px; width: 100%; height: 62px; border-radius: 18px; background: #FFFFFF; color: #0E4D4A; font-size: 21px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center">Start chatting</a>
+      <button type="button" onClick="{{closeMatch}}" style="min-height: 48px; padding: 0 20px; border: none; background: transparent; color: #FFFFFF; font-size: 18px; text-decoration: underline; cursor: pointer">Keep looking</button>
+    </div>
+  </sc-if>
+</div></template>
+<template id="tpl-Chat"><div style="width: 390px; height: 844px; box-sizing: border-box; background: #F4F8F7; font-family: Lexend, system-ui, sans-serif; color: #12201F; display: flex; flex-direction: column">
+  <header style="display: flex; align-items: center; gap: 12px; padding: 20px 16px 16px; background: #FFFFFF; border-bottom: 1px solid #DCE7E5">
+    <a href="Chats.dc.html" aria-label="Back" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: #0E4D4A">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
+    <div style="width: 52px; height: 52px; border-radius: 26px; background: #FDE9D8; color: #7A3A0B; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700" role="img" aria-label="Mdm Lim">ML</div>
+    <div style="flex: 1">
+      <p style="margin: 0; font-size: 21px; font-weight: 600">Mdm Lim</p>
+      <p style="margin: 0; font-size: 15px; color: #2F6B4F">Friends for 5 days</p>
+    </div>
+  </header>
+
+  <div style="flex: 1; padding: 18px 16px; display: flex; flex-direction: column; gap: 14px">
+    <p style="margin: 0; align-self: center; font-size: 15px; color: #4A5A58; background: #E5ECEB; padding: 6px 14px; border-radius: 14px">You both said hello on Monday</p>
+
+    <div style="align-self: flex-start; max-width: 80%; background: #FFFFFF; border: 1px solid #DCE7E5; border-radius: 20px 20px 20px 6px; padding: 14px 16px; font-size: 19px; line-height: 1.4">Morning! My chilli plant finally flowered today!</div>
+    <div style="align-self: flex-end; max-width: 80%; background: #0E4D4A; color: #FFFFFF; border-radius: 20px 20px 6px 20px; padding: 14px 16px; font-size: 19px; line-height: 1.4">Wah, so fast! Mine still sleeping. Got any tips?</div>
+    <div style="align-self: flex-start; max-width: 80%; background: #FFFFFF; border: 1px solid #DCE7E5; border-radius: 20px 20px 20px 6px; padding: 14px 16px; font-size: 19px; line-height: 1.4">Morning sun, water a bit only. Later I tell you more. Want to play a game first?</div>
+
+    <div style="align-self: flex-start; width: 82%; background: #FFF6EE; border: 2px solid #F3C9A4; border-radius: 22px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <div style="width: 48px; height: 48px; border-radius: 14px; background: #FDE9D8; display: flex; align-items: center; justify-content: center; color: #7A3A0B">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M3 9h18M3 15h18M9 3v18M15 3v18"></path></svg>
+        </div>
+        <div>
+          <p style="margin: 0; font-size: 15px; color: #7A3A0B">Mdm Lim invited you</p>
+          <p style="margin: 0; font-size: 20px; font-weight: 600">Word Hunt</p>
+        </div>
+      </div>
+      <a href="Game.dc.html" style="height: 54px; border-radius: 16px; background: #0E4D4A; color: #FFFFFF; font-size: 20px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center">Play now</a>
+    </div>
+  </div>
+
+  <div style="padding: 12px 14px 20px; background: #FFFFFF; border-top: 1px solid #DCE7E5; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+      <button type="button" style="min-height: 44px; padding: 0 14px; border-radius: 22px; border: 2px solid #B9CCC9; background: #FFFFFF; font-size: 16px; color: #12201F">Play a game</button>
+      <button type="button" style="min-height: 44px; padding: 0 14px; border-radius: 22px; border: 2px solid #B9CCC9; background: #FFFFFF; font-size: 16px; color: #12201F">Send a photo</button>
+      <button type="button" style="min-height: 44px; padding: 0 14px; border-radius: 22px; border: 2px solid #B9CCC9; background: #FFFFFF; font-size: 16px; color: #12201F">Good morning!</button>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center">
+      <label for="msg" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Type a message</label>
+      <input id="msg" type="text" placeholder="Type a message" style="flex: 1; min-width: 0; height: 56px; border-radius: 28px; border: 2px solid #B9CCC9; padding: 0 18px; font-size: 18px; font-family: inherit; color: #12201F; background: #F4F8F7">
+      <button type="button" aria-label="Hold to speak a voice message" style="width: 56px; height: 56px; border-radius: 28px; border: none; background: #0E4D4A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0014 0M12 18v3"></path></svg>
+      </button>
+    </div>
+  </div>
+</div></template>
+<template id="tpl-Game"><div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #F4F8F7; font-family: Lexend, system-ui, sans-serif; color: #12201F; display: flex; flex-direction: column; padding: 20px 20px 22px">
+  <div style="display: flex; align-items: center; gap: 10px">
+    <a href="Chat.dc.html" aria-label="Back to chat" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: #0E4D4A">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
+    <h1 style="margin: 0; font-size: 24px; font-weight: 700; flex: 1">Word Hunt</h1>
+    <span style="font-size: 16px; color: #4A5A58">Round 2</span>
+  </div>
+
+  <div style="display: flex; gap: 12px; margin-top: 14px">
+    <div style="flex: 1; background: #FFFFFF; border: 3px solid #0E4D4A; border-radius: 20px; padding: 12px 14px">
+      <p style="margin: 0; font-size: 16px; color: #4A5A58">You</p>
+      <p style="margin: 2px 0 0; font-size: 30px; font-weight: 700; color: #0E4D4A">12</p>
+    </div>
+    <div style="flex: 1; background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 20px; padding: 12px 14px">
+      <p style="margin: 0; font-size: 16px; color: #4A5A58">Mdm Lim</p>
+      <p style="margin: 2px 0 0; font-size: 30px; font-weight: 700; color: #B4561A">10</p>
+    </div>
+  </div>
+
+  <p style="margin: 16px 0 10px; font-size: 19px; font-weight: 600; text-align: center">Your turn — find a local food!</p>
+
+  <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; background: #FFFFFF; border-radius: 24px; padding: 12px; border: 2px solid #DCE7E5">
+    <sc-for list="{{cells}}" as="c" hint-placeholder-count="25">
+      <button type="button" onClick="{{c.tap}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.ch}}<br><br><br></button>
+    </sc-for>
+  </div>
+
+  <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px">
+    <span style="padding: 8px 14px; border-radius: 20px; background: #D7EBE7; color: #0E4D4A; font-size: 17px; font-weight: 600">KAYA · you</span>
+    <span style="padding: 8px 14px; border-radius: 20px; background: #FDE9D8; color: #7A3A0B; font-size: 17px; font-weight: 600">KOPI · Mdm Lim</span>
+    <span style="padding: 8px 14px; border-radius: 20px; background: #EEF1F0; color: #4A5A58; font-size: 17px">2 more to find</span>
+  </div>
+
+  <div style="flex: 1"></div>
+
+  <p style="margin: 0 0 8px; font-size: 16px; color: #4A5A58">Send a quick cheer</p>
+  <div style="display: flex; gap: 8px">
+    <button type="button" style="flex: 1; height: 52px; border-radius: 16px; border: 2px solid #B9CCC9; background: #FFFFFF; font-size: 17px; color: #12201F">Nice one!</button>
+    <button type="button" style="flex: 1; height: 52px; border-radius: 16px; border: 2px solid #B9CCC9; background: #FFFFFF; font-size: 17px; color: #12201F">Haha</button>
+    <button type="button" style="flex: 1; height: 52px; border-radius: 16px; border: 2px solid #B9CCC9; background: #FFFFFF; font-size: 17px; color: #12201F">Your turn</button>
+  </div>
+  <button type="button" onClick="{{finish}}" style="margin-top: 12px; height: 62px; border-radius: 18px; border: none; background: #0E4D4A; color: #FFFFFF; font-size: 21px; font-weight: 600; cursor: pointer">{{submitLabel}}</button>
+
+  <sc-if value="{{done}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; background: rgba(14,77,74,0.94); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; gap: 16px; text-align: center; color: #FFFFFF">
+      <p style="margin: 0; font-size: 30px; font-weight: 700">Great game!</p>
+      <p style="margin: 0; font-size: 19px; line-height: 1.45">You and Mdm Lim have played 6 games together. You seem to get along well.</p>
+      <p style="margin: 8px 0 0; font-size: 21px; font-weight: 600">Ready to meet in person?</p>
+      <a href="Meetup.dc.html" style="width: 100%; height: 62px; border-radius: 18px; background: #FFFFFF; color: #0E4D4A; font-size: 21px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center">See meetups near me</a>
+      <button type="button" onClick="{{again}}" style="min-height: 48px; padding: 0 20px; border: none; background: transparent; color: #FFFFFF; font-size: 18px; text-decoration: underline; cursor: pointer">Play again</button>
+    </div>
+  </sc-if>
+</div></template>
+<template id="tpl-Meetup"><div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #F4F8F7; font-family: Lexend, system-ui, sans-serif; color: #12201F; display: flex; flex-direction: column">
+  <div style="padding: 28px 24px 0">
+    <h1 style="margin: 0; font-size: 28px; font-weight: 700">Meet in person</h1>
+    <p style="margin: 6px 0 0; font-size: 18px; line-height: 1.4; color: #4A5A58">Group meetups at your Active Ageing Centre, with staff to help.</p>
+  </div>
+
+  <div style="margin: 18px 20px 0; background: #E5F1EF; border-radius: 20px; padding: 14px 16px; display: flex; align-items: center; gap: 12px">
+    <div style="display: flex">
+      <div style="width: 44px; height: 44px; border-radius: 22px; background: #D7EBE7; border: 3px solid #E5F1EF; color: #0E4D4A; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700" role="img" aria-label="You">UT</div>
+      <div style="width: 44px; height: 44px; border-radius: 22px; background: #FDE9D8; border: 3px solid #E5F1EF; color: #7A3A0B; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; margin-left: -12px" role="img" aria-label="Mdm Lim">ML</div>
+    </div>
+    <p style="margin: 0; font-size: 17px; line-height: 1.35; color: #0E3B39"><b>You and Mdm Lim</b> are both ready to meet!</p>
+  </div>
+
+  <div style="margin: 16px 20px 0; background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 26px; overflow: hidden">
+    <div style="height: 120px; background: #FDE9D8; display: flex; align-items: center; justify-content: center; color: #B4561A" role="img" aria-label="Photo of the activity room">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9h11v5a5 5 0 01-5 5h-1a5 5 0 01-5-5z"></path><path d="M16 10h1.5a2.5 2.5 0 010 5H16M8 3v3M11 2v4M14 3v3"></path></svg>
+    </div>
+    <div style="padding: 18px; display: flex; flex-direction: column; gap: 12px">
+      <p style="margin: 0; font-size: 23px; font-weight: 700">Kopi &amp; Mahjong Morning</p>
+      <div style="display: flex; gap: 12px; align-items: center; font-size: 18px; color: #2D3B3A">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0E4D4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
+        <span>Sat · 10am – 12pm</span>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center; font-size: 18px; color: #2D3B3A">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0E4D4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>
+        <span>Active Ageing Centre, Tampines</span>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center; font-size: 18px; color: #2D3B3A">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0E4D4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0113 0"></path><circle cx="17" cy="9" r="2.8"></circle><path d="M16 14.2a5 5 0 016 4.8"></path></svg>
+        <span>6 going · hosted by centre staff</span>
+      </div>
+      <button type="button" onClick="{{join}}" style="margin-top: 4px; height: 62px; border-radius: 18px; border: none; background: #0E4D4A; color: #FFFFFF; font-size: 21px; font-weight: 600; cursor: pointer">Join with Mdm Lim</button>
+      <a href="#" style="text-align: center; font-size: 17px; color: #0E4D4A">See other meetups</a>
+    </div>
+  </div>
+
+  <p style="margin: 14px 24px 0; font-size: 15px; line-height: 1.4; color: #4A5A58; text-align: center">Meetups are always in a group, at a public centre. You can cancel anytime.</p>
+
+  <div style="flex: 1"></div>
+
+  <nav aria-label="Main" style="display: flex; background: #FFFFFF; border-top: 1px solid #DCE7E5; padding: 10px 6px 18px">
+    <a href="Friends.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0113 0"></path><circle cx="17" cy="9" r="2.8"></circle><path d="M16 14.2a5 5 0 016 4.8"></path></svg>Friends</a>
+    <a href="Chats.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>Chats</a>
+    <a href="Games.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="11" rx="4"></rect><path d="M8 10.5v4M6 12.5h4"></path><circle cx="15.5" cy="11.5" r="0.8"></circle><circle cx="17.5" cy="13.8" r="0.8"></circle></svg>Games</a>
+    <a href="Meetups.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #0E4D4A; text-decoration: none; font-size: 15px; font-weight: 600">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Meetups</a>
+  </nav>
+
+  <sc-if value="{{joined}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; background: rgba(14,77,74,0.94); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; gap: 16px; text-align: center; color: #FFFFFF">
+      <div style="width: 84px; height: 84px; border-radius: 42px; background: #FFFFFF; color: #0E4D4A; display: flex; align-items: center; justify-content: center">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>
+      </div>
+      <p style="margin: 0; font-size: 30px; font-weight: 700">You are going!</p>
+      <p style="margin: 0; font-size: 19px; line-height: 1.45">Kopi &amp; Mahjong Morning, Saturday, 10am. We will remind you the day before. Centre staff will meet you at the door.</p>
+      <a href="Chats.dc.html" style="margin-top: 8px; width: 100%; height: 62px; border-radius: 18px; background: #FFFFFF; color: #0E4D4A; font-size: 21px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center">Back to my chats</a>
+    </div>
+  </sc-if>
+</div></template>
+<template id="tpl-Chats"><div style="width: 390px; height: 844px; box-sizing: border-box; background: #F4F8F7; font-family: Lexend, system-ui, sans-serif; color: #12201F; display: flex; flex-direction: column">
+  <div style="padding: 28px 24px 8px">
+    <h1 style="margin: 0; font-size: 28px; font-weight: 700">My chats</h1>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px; padding: 10px 16px">
+    <a href="Chat.dc.html" style="display: flex; align-items: center; gap: 14px; background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 22px; padding: 14px; text-decoration: none; color: #12201F">
+      <div style="width: 60px; height: 60px; border-radius: 30px; background: #FDE9D8; color: #7A3A0B; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; flex-shrink: 0" role="img" aria-label="Mdm Lim">ML</div>
+      <div style="flex: 1; min-width: 0">
+        <p style="margin: 0; font-size: 20px; font-weight: 600">Mdm Lim</p>
+        <p style="margin: 2px 0 0; font-size: 16px; color: #4A5A58">See you on Saturday!</p>
+      </div>
+      <span style="font-size: 14px; color: #4A5A58">9:02am</span>
+    </a>
+
+    <a href="Safety.dc.html" style="display: flex; align-items: center; gap: 14px; background: #FFF6EE; border: 2px solid #F3C9A4; border-radius: 22px; padding: 14px; text-decoration: none; color: #12201F">
+      <div style="width: 60px; height: 60px; border-radius: 30px; background: #E5ECEB; color: #2D3B3A; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; flex-shrink: 0" role="img" aria-label="Mr Ong">DO</div>
+      <div style="flex: 1; min-width: 0">
+        <p style="margin: 0; font-size: 20px; font-weight: 600">Mr David Ong</p>
+        <p style="margin: 4px 0 0; display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; color: #7A3A0B">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z"></path><path d="M12 10v4M12 17v.5"></path></svg>Safety check — tap to see</p>
+      </div>
+      <span style="font-size: 14px; color: #4A5A58">8:15am</span>
+    </a>
+
+    <div style="display: flex; align-items: center; gap: 14px; background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 22px; padding: 14px">
+      <div style="width: 60px; height: 60px; border-radius: 30px; background: #DCE8F7; color: #1F4378; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; flex-shrink: 0" role="img" aria-label="Encik Rahman">ER</div>
+      <div style="flex: 1; min-width: 0">
+        <p style="margin: 0; font-size: 20px; font-weight: 600">Encik Rahman</p>
+        <p style="margin: 2px 0 0; font-size: 16px; color: #4A5A58">Waiting for him to say hello</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex: 1"></div>
+
+  <nav aria-label="Main" style="display: flex; background: #FFFFFF; border-top: 1px solid #DCE7E5; padding: 10px 6px 18px">
+    <a href="Friends.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0113 0"></path><circle cx="17" cy="9" r="2.8"></circle><path d="M16 14.2a5 5 0 016 4.8"></path></svg>Friends</a>
+    <a href="Chats.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #0E4D4A; text-decoration: none; font-size: 15px; font-weight: 600">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>Chats</a>
+    <a href="Games.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="11" rx="4"></rect><path d="M8 10.5v4M6 12.5h4"></path><circle cx="15.5" cy="11.5" r="0.8"></circle><circle cx="17.5" cy="13.8" r="0.8"></circle></svg>Games</a>
+    <a href="Meetups.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Meetups</a>
+  </nav>
+</div></template>
+<template id="tpl-Safety"><div style="width: 390px; height: 844px; box-sizing: border-box; background: #F4F8F7; font-family: Lexend, system-ui, sans-serif; color: #12201F; display: flex; flex-direction: column">
+  <header style="display: flex; align-items: center; gap: 12px; padding: 20px 16px 14px; background: #FFFFFF; border-bottom: 1px solid #DCE7E5">
+    <a href="Chats.dc.html" aria-label="Back" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: #0E4D4A">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
+    <div style="width: 52px; height: 52px; border-radius: 26px; background: #E5ECEB; color: #2D3B3A; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700" role="img" aria-label="Mr Ong">DO</div>
+    <div style="flex: 1">
+      <p style="margin: 0; font-size: 21px; font-weight: 600">Mr David Ong</p>
+      <p style="margin: 0; font-size: 15px; color: #4A5A58">Friends for 2 days</p>
+    </div>
+  </header>
+
+  <div style="flex: 1; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
+    <div style="align-self: flex-start; max-width: 82%; background: #FFFFFF; border: 1px solid #DCE7E5; border-radius: 20px 20px 20px 6px; padding: 12px 16px; font-size: 18px; line-height: 1.4">Uncle, you are very kind. I really enjoy talking to you.</div>
+    <div style="align-self: flex-start; max-width: 86%; display: flex; flex-direction: column; gap: 6px">
+      <div style="background: #FFFFFF; border: 3px solid #B4561A; border-radius: 20px 20px 20px 6px; padding: 12px 16px; font-size: 18px; line-height: 1.4">Uncle, my bank card got problem. Can you transfer me $500? I pay you back tomorrow.</div>
+      <span style="align-self: flex-start; display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 10px; background: #FDE9D8; color: #7A3A0B; font-size: 14px; font-weight: 600">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z"></path><path d="M12 10v4M12 17v.5"></path></svg>Asks for money</span>
+    </div>
+
+    <sc-if value="{{checking}}" hint-placeholder-val="{{true}}">
+      <div style="background: #FFF6EE; border: 2px solid #F3C9A4; border-radius: 22px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; gap: 12px; align-items: flex-start">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#B4561A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6z"></path><path d="M12 8v5M12 16v.5"></path></svg>
+          <div>
+            <p style="margin: 0; font-size: 20px; font-weight: 700; color: #5C2C08">Please do not send money</p>
+            <p style="margin: 4px 0 0; font-size: 16px; line-height: 1.4; color: #5C2C08">A real person from our safety team is checking this chat now.</p>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px; padding-left: 4px">
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 16px; color: #2D3B3A">
+            <span style="width: 26px; height: 26px; border-radius: 13px; background: #0E4D4A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700">✓</span>AI spotted a money request</div>
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; color: #12201F">
+            <span style="width: 22px; height: 22px; border-radius: 13px; border: 3px solid #B4561A; background: #FFFFFF"></span>Safety officer checking (about 1 hour)</div>
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 16px; color: #4A5A58">
+            <span style="width: 22px; height: 22px; border-radius: 13px; border: 2px solid #B9CCC9; background: #FFFFFF"></span>We tell you the result</div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{confirmed}}" hint-placeholder-val="{{false}}">
+      <div style="background: #E5F1EF; border: 2px solid #9CC7BF; border-radius: 22px; padding: 16px; display: flex; gap: 12px; align-items: flex-start">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0E4D4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg>
+        <div>
+          <p style="margin: 0; font-size: 20px; font-weight: 700; color: #0E3B39">Checked: this was a scam</p>
+          <p style="margin: 4px 0 0; font-size: 16px; line-height: 1.4; color: #0E3B39">Our safety officer has blocked this account. You did the right thing. Your money is safe.</p>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="padding: 14px 16px 22px; background: #FFFFFF; border-top: 1px solid #DCE7E5; display: flex; flex-direction: column; gap: 10px">
+    <sc-if value="{{checking}}" hint-placeholder-val="{{true}}">
+      <button type="button" onClick="{{report}}" style="width: 100%; height: 58px; border-radius: 16px; border: none; background: #B4561A; color: #FFFFFF; font-size: 19px; font-weight: 600; cursor: pointer">Block and report</button>
+    </sc-if>
+    <sc-if value="{{confirmed}}" hint-placeholder-val="{{false}}">
+      <a href="Chats.dc.html" style="height: 58px; border-radius: 16px; background: #0E4D4A; color: #FFFFFF; font-size: 19px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center">Back to my chats</a>
+    </sc-if>
+    <a href="#" style="height: 58px; border-radius: 16px; border: 2px solid #B9CCC9; background: #FFFFFF; color: #0E4D4A; font-size: 19px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"></path></svg>Call a safety officer</a>
+    <p style="margin: 0; font-size: 15px; text-align: center; color: #4A5A58">Replies to Mr Ong are paused while we check.</p>
+  </div>
+</div></template>
+<template id="tpl-Friends"><div style="width: 390px; height: 844px; box-sizing: border-box; background: #F4F8F7; font-family: Lexend, system-ui, sans-serif; color: #12201F; display: flex; flex-direction: column">
+  <div style="padding: 28px 24px 0">
+    <h1 style="margin: 0; font-size: 28px; font-weight: 700">My friends</h1>
+    <p style="margin: 4px 0 0; font-size: 17px; color: #4A5A58">People you have connected with</p>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px; padding: 16px 16px 0">
+    <div style="background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 22px; padding: 16px; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; align-items: center; gap: 14px">
+        <div style="width: 64px; height: 64px; border-radius: 32px; background: #FDE9D8; color: #7A3A0B; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; flex-shrink: 0" role="img" aria-label="Mdm Lim">ML</div>
+        <div style="flex: 1">
+          <p style="margin: 0; font-size: 21px; font-weight: 600">Mdm Lim</p>
+          <p style="margin: 2px 0 0; font-size: 15px; color: #4A5A58">Friends for 3 weeks · 6 games played</p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 10px">
+        <a href="Chat.dc.html" style="flex: 1; height: 52px; border-radius: 16px; background: #0E4D4A; color: #FFFFFF; font-size: 18px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center">Chat</a>
+        <a href="Games.dc.html" style="flex: 1; height: 52px; border-radius: 16px; border: 2px solid #B9CCC9; background: #FFFFFF; color: #0E4D4A; font-size: 18px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center">Play a game</a>
+      </div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 22px; padding: 16px; display: flex; align-items: center; gap: 14px">
+      <div style="width: 64px; height: 64px; border-radius: 32px; background: #DCE8F7; color: #1F4378; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; flex-shrink: 0" role="img" aria-label="Encik Rahman">ER</div>
+      <div style="flex: 1">
+        <p style="margin: 0; font-size: 21px; font-weight: 600">Encik Rahman</p>
+        <p style="margin: 2px 0 0; font-size: 15px; color: #4A5A58">Waiting for him to say hello</p>
+      </div>
+    </div>
+
+    <a href="Meetups.dc.html" style="background: #E5F1EF; border-radius: 22px; padding: 16px; display: flex; align-items: center; gap: 14px; text-decoration: none; color: #0E3B39">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0E4D4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
+      <div style="flex: 1">
+        <p style="margin: 0; font-size: 15px; color: #2F5F5B">Coming up</p>
+        <p style="margin: 2px 0 0; font-size: 18px; font-weight: 600">Kopi &amp; Mahjong Morning with Mdm Lim</p>
+      </div>
+    </a>
+  </div>
+
+  <div style="flex: 1"></div>
+
+  <div style="padding: 0 16px 14px">
+    <a href="Match.dc.html" style="height: 62px; border-radius: 18px; background: #0E4D4A; color: #FFFFFF; font-size: 20px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Find new friends</a>
+  </div>
+
+  <nav aria-label="Main" style="display: flex; background: #FFFFFF; border-top: 1px solid #DCE7E5; padding: 10px 6px 16px">
+    <a href="Friends.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #0E4D4A; text-decoration: none; font-size: 15px; font-weight: 600">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0113 0"></path><circle cx="17" cy="9" r="2.8"></circle><path d="M16 14.2a5 5 0 016 4.8"></path></svg>Friends</a>
+    <a href="Chats.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>Chats</a>
+    <a href="Games.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="11" rx="4"></rect><path d="M8 10.5v4M6 12.5h4"></path><circle cx="15.5" cy="11.5" r="0.8"></circle><circle cx="17.5" cy="13.8" r="0.8"></circle></svg>Games</a>
+    <a href="Meetups.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Meetups</a>
+  </nav>
+</div></template>
+<template id="tpl-Games"><div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #F4F8F7; font-family: Lexend, system-ui, sans-serif; color: #12201F; display: flex; flex-direction: column; overflow: hidden">
+  <div style="padding: 28px 24px 0">
+    <h1 style="margin: 0; font-size: 28px; font-weight: 700">Games</h1>
+    <p style="margin: 4px 0 0; font-size: 17px; line-height: 1.4; color: #4A5A58">Play with a friend. A fun way to get to know each other.</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 16px 16px 0">
+    <button type="button" onClick="{{pickMahjong}}" style="text-align: left; background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; color: #12201F">
+      <div style="width: 48px; height: 48px; border-radius: 14px; background: #D7EBE7; color: #0E4D4A; display: flex; align-items: center; justify-content: center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5"></rect><circle cx="9.5" cy="8.5" r="1.3"></circle><circle cx="14.5" cy="8.5" r="1.3"></circle><circle cx="12" cy="12" r="1.3"></circle><circle cx="9.5" cy="15.5" r="1.3"></circle><circle cx="14.5" cy="15.5" r="1.3"></circle></svg>
+      </div>
+      <span style="font-size: 19px; font-weight: 600">Mahjong</span>
+      <span style="font-size: 14px; color: #4A5A58">4 players</span>
+    </button>
+
+    <button type="button" onClick="{{pickChess}}" style="text-align: left; background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; color: #12201F">
+      <div style="width: 48px; height: 48px; border-radius: 14px; background: #FDE9D8; color: #7A3A0B; display: flex; align-items: center; justify-content: center">
+        <span style="width: 32px; height: 32px; border-radius: 16px; border: 2px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700" aria-hidden="true">帅</span>
+      </div>
+      <span style="font-size: 19px; font-weight: 600">Chinese Chess</span>
+      <span style="font-size: 14px; color: #4A5A58">2 players</span>
+    </button>
+
+    <a href="Game.dc.html" style="text-decoration: none; background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 8px; color: #12201F">
+      <div style="width: 48px; height: 48px; border-radius: 14px; background: #DCE8F7; color: #1F4378; display: flex; align-items: center; justify-content: center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M3 9h18M3 15h18M9 3v18M15 3v18"></path></svg>
+      </div>
+      <span style="font-size: 19px; font-weight: 600">Word Hunt</span>
+      <span style="font-size: 14px; font-weight: 600; color: #2F6B4F">Mdm Lim is waiting</span>
+    </a>
+
+    <button type="button" onClick="{{pickCongkak}}" style="text-align: left; background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; color: #12201F">
+      <div style="width: 48px; height: 48px; border-radius: 14px; background: #EDE3F5; color: #55307A; display: flex; align-items: center; justify-content: center">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="5"></rect><circle cx="8" cy="10.5" r="1"></circle><circle cx="12" cy="10.5" r="1"></circle><circle cx="16" cy="10.5" r="1"></circle><circle cx="8" cy="13.5" r="1"></circle><circle cx="12" cy="13.5" r="1"></circle><circle cx="16" cy="13.5" r="1"></circle></svg>
+      </div>
+      <span style="font-size: 19px; font-weight: 600">Congkak</span>
+      <span style="font-size: 14px; color: #4A5A58">2 players</span>
+    </button>
+
+    <button type="button" onClick="{{pickCarrom}}" style="text-align: left; background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; color: #12201F">
+      <div style="width: 48px; height: 48px; border-radius: 14px; background: #FDE9D8; color: #7A3A0B; display: flex; align-items: center; justify-content: center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="12" cy="12" r="3"></circle><circle cx="6" cy="6" r="1.2"></circle><circle cx="18" cy="6" r="1.2"></circle><circle cx="6" cy="18" r="1.2"></circle><circle cx="18" cy="18" r="1.2"></circle></svg>
+      </div>
+      <span style="font-size: 19px; font-weight: 600">Carrom</span>
+      <span style="font-size: 14px; color: #4A5A58">2–4 players</span>
+    </button>
+
+    <button type="button" onClick="{{pickQuiz}}" style="text-align: left; background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; color: #12201F">
+      <div style="width: 48px; height: 48px; border-radius: 14px; background: #D7EBE7; color: #0E4D4A; display: flex; align-items: center; justify-content: center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path><path d="M10 8.5a2 2 0 113 1.7c-.7.4-1 .8-1 1.5M12 13.5v.3"></path></svg>
+      </div>
+      <span style="font-size: 19px; font-weight: 600">Old Singapore Quiz</span>
+      <span style="font-size: 14px; color: #4A5A58">2–6 players</span>
+    </button>
+  </div>
+
+  <div style="flex: 1"></div>
+
+  <nav aria-label="Main" style="display: flex; background: #FFFFFF; border-top: 1px solid #DCE7E5; padding: 10px 6px 16px">
+    <a href="Friends.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0113 0"></path><circle cx="17" cy="9" r="2.8"></circle><path d="M16 14.2a5 5 0 016 4.8"></path></svg>Friends</a>
+    <a href="Chats.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>Chats</a>
+    <a href="Games.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #0E4D4A; text-decoration: none; font-size: 15px; font-weight: 600">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="11" rx="4"></rect><path d="M8 10.5v4M6 12.5h4"></path><circle cx="15.5" cy="11.5" r="0.8"></circle><circle cx="17.5" cy="13.8" r="0.8"></circle></svg>Games</a>
+    <a href="Meetups.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Meetups</a>
+  </nav>
+
+  <sc-if value="{{sheetOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; background: rgba(18,32,31,0.45); display: flex; flex-direction: column; justify-content: flex-end">
+      <div style="background: #FFFFFF; border-radius: 28px 28px 0 0; padding: 24px 20px 28px; display: flex; flex-direction: column; gap: 14px">
+        <p style="margin: 0; font-size: 22px; font-weight: 700">Play {{game}} with…</p>
+        <div style="display: flex; align-items: center; gap: 14px; border: 2px solid #DCE7E5; border-radius: 20px; padding: 12px 14px">
+          <div style="width: 52px; height: 52px; border-radius: 26px; background: #FDE9D8; color: #7A3A0B; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; flex-shrink: 0" role="img" aria-label="Mdm Lim">ML</div>
+          <p style="margin: 0; flex: 1; font-size: 19px; font-weight: 600">Mdm Lim</p>
+          <sc-if value="{{notSent}}" hint-placeholder-val="{{true}}">
+            <button type="button" onClick="{{invite}}" style="min-height: 48px; padding: 0 18px; border-radius: 14px; border: none; background: #0E4D4A; color: #FFFFFF; font-size: 17px; font-weight: 600; cursor: pointer">Invite</button>
+          </sc-if>
+          <sc-if value="{{sent}}" hint-placeholder-val="{{false}}">
+            <span style="font-size: 16px; font-weight: 600; color: #2F6B4F">Invite sent ✓</span>
+          </sc-if>
+        </div>
+        <sc-if value="{{sent}}" hint-placeholder-val="{{false}}">
+          <p style="margin: 0; font-size: 16px; line-height: 1.4; color: #4A5A58">We will tell you when Mdm Lim joins the game.</p>
+        </sc-if>
+        <button type="button" onClick="{{close}}" style="height: 56px; border-radius: 16px; border: 2px solid #B9CCC9; background: #FFFFFF; color: #0E4D4A; font-size: 18px; font-weight: 600; cursor: pointer">Close</button>
+      </div>
+    </div>
+  </sc-if>
+</div></template>
+<template id="tpl-Meetups"><div style="width: 390px; height: 844px; box-sizing: border-box; background: #F4F8F7; font-family: Lexend, system-ui, sans-serif; color: #12201F; display: flex; flex-direction: column">
+  <div style="padding: 26px 24px 0">
+    <h1 style="margin: 0; font-size: 28px; font-weight: 700">Meetups</h1>
+    <p style="margin: 2px 0 0; font-size: 16px; color: #4A5A58">At Active Ageing Centres, with staff to help</p>
+  </div>
+
+  <h2 style="margin: 16px 24px 8px; font-size: 18px; font-weight: 700; color: #0E4D4A">Confirmed meetups</h2>
+  <div style="margin: 0 16px; background: #E5F1EF; border: 2px solid #9CC7BF; border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px">
+      <p style="margin: 0; font-size: 20px; font-weight: 700; color: #0E3B39">Kopi &amp; Mahjong Morning</p>
+      <span style="flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 12px; background: #0E4D4A; color: #FFFFFF; font-size: 14px; font-weight: 600">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>Going</span>
+    </div>
+    <p style="margin: 0; font-size: 16px; color: #0E3B39">Sat · 10am – 12pm</p>
+    <p style="margin: 0; font-size: 16px; color: #0E3B39">Active Ageing Centre, Tampines</p>
+    <div style="display: flex; align-items: center; gap: 8px">
+      <div style="width: 32px; height: 32px; border-radius: 16px; background: #FDE9D8; color: #7A3A0B; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700" role="img" aria-label="Mdm Lim">ML</div>
+      <span style="font-size: 15px; color: #0E3B39">With Mdm Lim + 4 others</span>
+    </div>
+  </div>
+
+  <h2 style="margin: 18px 24px 8px; font-size: 18px; font-weight: 700">More meetups near you</h2>
+  <div style="display: flex; flex-direction: column; gap: 10px; padding: 0 16px">
+    <sc-for list="{{events}}" as="e" hint-placeholder-count="3">
+      <div style="background: #FFFFFF; border: 2px solid #DCE7E5; border-radius: 20px; padding: 12px 14px; display: flex; align-items: center; gap: 12px">
+        <div style="width: 58px; flex-shrink: 0; border-radius: 14px; background: #FFF6EE; padding: 6px 0; text-align: center">
+          <p style="margin: 0; font-size: 15px; font-weight: 700; color: #7A3A0B">{{e.day}}</p>
+          <p style="margin: 0; font-size: 13px; color: #7A3A0B">{{e.time}}</p>
+        </div>
+        <div style="flex: 1; min-width: 0">
+          <p style="margin: 0; font-size: 17px; font-weight: 600">{{e.title}}</p>
+          <p style="margin: 2px 0 0; font-size: 14px; color: #4A5A58">{{e.place}}</p>
+        </div>
+        <button type="button" onClick="{{e.toggle}}" aria-pressed="{{e.pressed}}" style="{{e.style}}">{{e.label}}</button>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="flex: 1"></div>
+
+  <nav aria-label="Main" style="display: flex; background: #FFFFFF; border-top: 1px solid #DCE7E5; padding: 10px 6px 16px">
+    <a href="Friends.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0113 0"></path><circle cx="17" cy="9" r="2.8"></circle><path d="M16 14.2a5 5 0 016 4.8"></path></svg>Friends</a>
+    <a href="Chats.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>Chats</a>
+    <a href="Games.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #4A5A58; text-decoration: none; font-size: 15px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="11" rx="4"></rect><path d="M8 10.5v4M6 12.5h4"></path><circle cx="15.5" cy="11.5" r="0.8"></circle><circle cx="17.5" cy="13.8" r="0.8"></circle></svg>Games</a>
+    <a href="Meetups.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: #0E4D4A; text-decoration: none; font-size: 15px; font-weight: 600">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Meetups</a>
+  </nav>
+</div></template>
+
+<script>
+(function () {
+  const PROPS = {"Verify": {}, "Main": {}, "Profile": {}, "Match": {}, "Chat": {}, "Game": {}, "Meetup": {}, "Chats": {}, "Safety": {"stage": "checking"}, "Friends": {}, "Games": {}, "Meetups": {}};
+  const COMPONENTS = {};
+
+  class DCLogic {
+    constructor(props) { this.props = props || {}; }
+    setState(patch) {
+      const p = typeof patch === 'function' ? patch(this.state, this.props) : patch;
+      this.state = Object.assign({}, this.state || {}, p);
+      if (this.__rerender) this.__rerender();
+    }
+    forceUpdate() { if (this.__rerender) this.__rerender(); }
+  }
+
+COMPONENTS["Verify"] = (function (DCLogic) {
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { lang: 'English' };
+  }
+  renderVals() {
+    const cur = this.state.lang;
+    return {
+      langs: ['English', '华语', 'Bahasa Melayu', 'தமிழ்'].map((x) => {
+        const on = x === cur;
+        return {
+          label: (on ? '✓ ' : '') + x,
+          pressed: on ? 'true' : 'false',
+          style: 'min-height: 60px; border-radius: 18px; font-size: 19px; font-weight: 600; cursor: pointer; ' +
+            (on ? 'background: #0E4D4A; color: #FFFFFF; border: 2px solid #0E4D4A;' : 'background: #FFFFFF; color: #12201F; border: 2px solid #B9CCC9;'),
+          pick: () => this.setState({ lang: x })
+        };
+      })
+    };
+  }
+}
+return Component;
+})(DCLogic);
+COMPONENTS["Main"] = (function (DCLogic) {
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { listening: true, lang: 'English', langOpen: false };
+  }
+  renderVals() {
+    const on = this.state.listening;
+    const cur = this.state.lang;
+    return {
+      langLabel: cur === 'Bahasa Melayu' ? 'Melayu' : cur,
+      langOpen: this.state.langOpen ? 'true' : 'false',
+      langOpenBool: this.state.langOpen,
+      toggleLang: () => this.setState({ langOpen: !this.state.langOpen }),
+      langs: ['English', '华语', 'Bahasa Melayu', 'தமிழ்'].map((x) => ({
+        label: (x === cur ? '✓ ' : '') + x,
+        style: 'min-height: 48px; text-align: left; padding: 0 14px; border-radius: 12px; border: none; font-size: 18px; cursor: pointer; ' + (x === cur ? 'background: #E5F1EF; color: #0E4D4A; font-weight: 600;' : 'background: #FFFFFF; color: #12201F;'),
+        pick: () => this.setState({ lang: x, langOpen: false })
+      })),
+      toggle: () => this.setState({ listening: !on }),
+      pressed: on ? 'true' : 'false',
+      status: on ? 'Listening to you…' : 'Tap the big button to answer',
+      micLabel: on ? 'Stop talking' : 'Tap to talk',
+      micHint: on ? 'Listening… tap when you are done' : 'Tap to talk',
+      micBg: on ? '#B4561A' : '#0E4D4A',
+      ring1: on ? '#BFDCD7' : '#D7EBE7',
+      ring2: on ? '#DDEDEA' : '#E9F2F0',
+      b1: on ? 14 : 8, b2: on ? 26 : 8, b3: on ? 38 : 8
+    };
+  }
+}
+return Component;
+})(DCLogic);
+COMPONENTS["Profile"] = (function (DCLogic) {
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+return Component;
+})(DCLogic);
+COMPONENTS["Match"] = (function (DCLogic) {
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { idx: 0, dx: 0, dragging: false, matched: false, toast: '' };
+    this.startX = 0;
+  }
+  profiles() {
+    return [
+      { name: 'Mdm Lim, 68', town: 'Tampines', initials: 'ML', bg: '#FDE9D8', fg: '#7A3A0B',
+        why: 'you both love mahjong and gardening, and you both enjoy a good laugh.',
+        quote: 'Retired teacher. I grow chilli and pandan at my corridor. Looking for kakis to play mahjong!',
+        tags: ['Mahjong', 'Gardening', 'Old movies', 'Mandarin, Hokkien'], mutual: true },
+      { name: 'Encik Rahman, 72', town: 'Bedok', initials: 'ER', bg: '#DCE8F7', fg: '#1F4378',
+        why: 'you both go to the wet market every week and like to talk about the old kampung days.',
+        quote: 'Ex-bus captain. I still watch every Lions match. Teh tarik on me!',
+        tags: ['Football', 'Kampung stories', 'Cooking', 'Malay, English'], mutual: false },
+      { name: 'Mdm Kamala, 70', town: 'Jurong West', initials: 'MK', bg: '#EDE3F5', fg: '#55307A',
+        why: 'you both enjoy cooking and morning walks in the park.',
+        quote: 'I make the best mutton curry in my block. Happy to share recipes and walk together.',
+        tags: ['Cooking', 'Morning walks', 'Tamil movies', 'Tamil, English'], mutual: false }
+    ];
+  }
+  decide(dir) {
+    const ps = this.profiles();
+    const p = ps[this.state.idx];
+    if (!p) return;
+    if (dir > 0 && p.mutual) {
+      this.setState({ idx: this.state.idx + 1, dx: 0, dragging: false, matched: true, toast: '' });
+    } else if (dir > 0) {
+      this.setState({ idx: this.state.idx + 1, dx: 0, dragging: false, toast: 'You said hello to ' + p.name.split(',')[0] + '. We will tell you when they say hello back.' });
+    } else {
+      this.setState({ idx: this.state.idx + 1, dx: 0, dragging: false, toast: '' });
+    }
+  }
+  renderVals() {
+    const ps = this.profiles();
+    const p = ps[this.state.idx];
+    const dx = this.state.dx;
+    return {
+      p: p || ps[0],
+      hasCard: !!p,
+      noCard: !p,
+      matched: this.state.matched,
+      toast: this.state.toast,
+      showHello: dx > 50,
+      showSkip: dx < -50,
+      tf: 'translateX(' + dx + 'px) rotate(' + (dx / 18) + 'deg)',
+      tr: this.state.dragging ? 'none' : 'transform 0.25s ease',
+      down: (e) => {
+        this.startX = e.clientX;
+        try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
+        this.setState({ dragging: true });
+      },
+      move: (e) => {
+        if (!this.state.dragging) return;
+        this.setState({ dx: e.clientX - this.startX });
+      },
+      up: () => {
+        if (!this.state.dragging) return;
+        const d = this.state.dx;
+        if (d > 110) this.decide(1);
+        else if (d < -110) this.decide(-1);
+        else this.setState({ dx: 0, dragging: false });
+      },
+      skip: () => this.decide(-1),
+      hello: () => this.decide(1),
+      restart: () => this.setState({ idx: 0, toast: '' }),
+      closeMatch: () => this.setState({ matched: false })
+    };
+  }
+}
+return Component;
+})(DCLogic);
+COMPONENTS["Chat"] = (function (DCLogic) {
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+return Component;
+})(DCLogic);
+COMPONENTS["Game"] = (function (DCLogic) {
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: {} };
+  }
+  renderVals() {
+    const rows = ['KOPIM', 'ASTEA', 'YELUK', 'ARICE', 'NASIN'];
+    const mine = { 0: 1, 5: 1, 10: 1, 15: 1 };
+    const hers = { 0: 1, 1: 1, 2: 1, 3: 1 };
+    const sel = this.state.sel;
+    const cells = [];
+    rows.join('').split('').forEach((ch, i) => {
+      const on = !!sel[i];
+      let bg = '#F4F8F7', fg = '#12201F', bd = '#DCE7E5';
+      if (hers[i]) { bg = '#FDE9D8'; fg = '#7A3A0B'; bd = '#F3C9A4'; }
+      if (mine[i]) { bg = '#D7EBE7'; fg = '#0E4D4A'; bd = '#9CC7BF'; }
+      if (on) { bg = '#0E4D4A'; fg = '#FFFFFF'; bd = '#0E4D4A'; }
+      cells.push({
+        ch, pressed: on ? 'true' : 'false',
+        style: 'height: 56px; border-radius: 14px; font-size: 26px; font-weight: 700; cursor: pointer; background: ' + bg + '; color: ' + fg + '; border: 2px solid ' + bd + ';',
+        tap: () => this.setState({ sel: Object.assign({}, sel, { [i]: !on }) })
+      });
+    });
+    const word = Object.keys(sel).filter((k) => sel[k]).map(Number).sort((a, b) => a - b).map((i) => rows.join('')[i]).join('');
+    return { cells, done: !!this.state.done, finish: () => this.setState({ done: true }), again: () => this.setState({ done: false, sel: {} }), submitLabel: word ? 'Submit “' + word + '”' : 'Finish game' };
+  }
+}
+return Component;
+})(DCLogic);
+COMPONENTS["Meetup"] = (function (DCLogic) {
+class Component extends DCLogic {
+  renderVals() {
+    return { joined: !!(this.state && this.state.joined), join: () => this.setState({ joined: true }) };
+  }
+}
+return Component;
+})(DCLogic);
+COMPONENTS["Chats"] = (function (DCLogic) {
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+return Component;
+})(DCLogic);
+COMPONENTS["Safety"] = (function (DCLogic) {
+class Component extends DCLogic {
+  renderVals() {
+    const s = (this.state && this.state.reported) ? 'scam confirmed' : (this.props.stage ?? 'checking');
+    return { checking: s !== 'scam confirmed', confirmed: s === 'scam confirmed', report: () => this.setState({ reported: true }) };
+  }
+}
+return Component;
+})(DCLogic);
+COMPONENTS["Friends"] = (function (DCLogic) {
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+return Component;
+})(DCLogic);
+COMPONENTS["Games"] = (function (DCLogic) {
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { game: null, sent: false };
+  }
+  renderVals() {
+    const pick = (g) => () => this.setState({ game: g, sent: false });
+    return {
+      sheetOpen: !!this.state.game,
+      game: this.state.game || '',
+      sent: this.state.sent,
+      notSent: !this.state.sent,
+      pickMahjong: pick('Mahjong'),
+      pickChess: pick('Chinese Chess'),
+      pickCongkak: pick('Congkak'),
+      pickCarrom: pick('Carrom'),
+      pickQuiz: pick('Old Singapore Quiz'),
+      invite: () => this.setState({ sent: true }),
+      close: () => this.setState({ game: null, sent: false })
+    };
+  }
+}
+return Component;
+})(DCLogic);
+COMPONENTS["Meetups"] = (function (DCLogic) {
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { joined: {} };
+  }
+  renderVals() {
+    const list = [
+      { id: 'taichi', day: 'Sun', time: '7:30am', title: 'Tai Chi in the Park', place: 'Bedok Reservoir Park' },
+      { id: 'kueh', day: 'Wed', time: '10am', title: 'Kueh Making Class', place: 'Active Ageing Centre, Jurong West' },
+      { id: 'karaoke', day: 'Fri', time: '2pm', title: 'Golden Oldies Karaoke', place: 'Active Ageing Centre, Tampines' }
+    ];
+    const j = this.state.joined;
+    return {
+      events: list.map((e) => {
+        const on = !!j[e.id];
+        return Object.assign({}, e, {
+          label: on ? 'Joined ✓' : 'Join',
+          pressed: on ? 'true' : 'false',
+          style: 'flex-shrink: 0; min-height: 48px; min-width: 76px; padding: 0 12px; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; ' +
+            (on ? 'background: #E5F1EF; color: #0E4D4A; border: 2px solid #9CC7BF;' : 'background: #0E4D4A; color: #FFFFFF; border: 2px solid #0E4D4A;'),
+          toggle: () => this.setState({ joined: Object.assign({}, j, { [e.id]: !on }) })
+        });
+      })
+    };
+  }
+}
+return Component;
+})(DCLogic);
+
+  const HOLE = /\{\{\s*([^}]+?)\s*\}\}/g;
+  const WHOLE = /^\s*\{\{\s*([^}]+?)\s*\}\}\s*$/;
+
+  function lookup(path, scope) {
+    if (path === 'true') return true;
+    if (path === 'false') return false;
+    if (path === 'null') return null;
+    if (/^-?\d+(\.\d+)?$/.test(path)) return Number(path);
+    if (/^(['"]).*\1$/.test(path)) return path.slice(1, -1);
+    let v = scope;
+    for (const k of path.split('.')) { if (v == null) return undefined; v = v[k]; }
+    return v;
+  }
+  function interp(str, scope) {
+    return str.replace(HOLE, (_, p) => { const v = lookup(p, scope); return v == null ? '' : String(v); });
+  }
+  function raw(str, scope) {
+    const m = str.match(WHOLE);
+    return m ? lookup(m[1], scope) : interp(str, scope);
+  }
+
+  let go = () => {};
+
+  function bind(el) {
+    el.__bound = el.__bound || {};
+    for (const type in el.__h) {
+      if (!el.__bound[type]) {
+        el.__bound[type] = true;
+        el.addEventListener(type, (e) => { const f = el.__h && el.__h[type]; if (f) f(e); });
+      }
+    }
+  }
+
+  function renderNodes(nodes, scope, out) {
+    for (const n of nodes) {
+      if (n.nodeType === 3) {
+        out.push(document.createTextNode(n.nodeValue.indexOf('{{') >= 0 ? interp(n.nodeValue, scope) : n.nodeValue));
+      } else if (n.nodeType === 1) {
+        const tag = n.localName;
+        if (tag === 'sc-if') {
+          if (raw(n.getAttribute('value') || '', scope)) renderNodes(n.childNodes, scope, out);
+        } else if (tag === 'sc-for') {
+          const list = raw(n.getAttribute('list') || '', scope) || [];
+          const as = n.getAttribute('as') || 'item';
+          list.forEach((item, i) => {
+            const s = Object.create(scope);
+            s[as] = item; s.$index = i;
+            renderNodes(n.childNodes, s, out);
+          });
+        } else {
+          const el = document.importNode(n, false);
+          el.__h = {};
+          for (const a of Array.from(n.attributes)) {
+            const name = a.name;
+            if (name.indexOf('hint-') === 0) { el.removeAttribute(name); continue; }
+            if (name.indexOf('on') === 0) {
+              el.removeAttribute(name);
+              const f = raw(a.value, scope);
+              if (typeof f === 'function') el.__h[name.slice(2).toLowerCase()] = f;
+              continue;
+            }
+            if (a.value.indexOf('{{') >= 0) {
+              const v = raw(a.value, scope);
+              if (v === false || v == null) el.removeAttribute(name); else el.setAttribute(name, String(v));
+            }
+          }
+          if (tag === 'a') {
+            const href = el.getAttribute('href') || '';
+            const m = href.match(/([A-Za-z0-9_-]+)\.dc\.html$/);
+            const prev = el.__h.click;
+            el.__h.click = (e) => {
+              if (prev) prev(e);
+              if (m) { e.preventDefault(); go(m[1]); }
+              else if (href === '#' || href === '') e.preventDefault();
+            };
+          }
+          bind(el);
+          const kids = [];
+          renderNodes(n.childNodes, scope, kids);
+          for (const k of kids) el.appendChild(k);
+          out.push(el);
+        }
+      }
+    }
+  }
+
+  function patch(parent, fresh) {
+    for (let i = 0; i < fresh.length; i++) {
+      const nw = fresh[i];
+      const old = parent.childNodes[i];
+      if (!old) { parent.appendChild(nw); continue; }
+      if (old.nodeType !== nw.nodeType || old.nodeName !== nw.nodeName) { parent.replaceChild(nw, old); continue; }
+      if (nw.nodeType === 3) { if (old.nodeValue !== nw.nodeValue) old.nodeValue = nw.nodeValue; continue; }
+      for (const a of Array.from(old.attributes)) if (!nw.hasAttribute(a.name)) old.removeAttribute(a.name);
+      for (const a of Array.from(nw.attributes)) if (old.getAttribute(a.name) !== a.value) old.setAttribute(a.name, a.value);
+      old.__h = nw.__h; bind(old);
+      patch(old, Array.from(nw.childNodes));
+    }
+    while (parent.childNodes.length > fresh.length) parent.removeChild(parent.lastChild);
+  }
+
+  const screenEl = document.getElementById('screen');
+  const jump = document.getElementById('jump');
+  let current = null;
+
+  function mount(name) {
+    const Cls = COMPONENTS[name];
+    const tpl = document.getElementById('tpl-' + name);
+    if (!Cls || !tpl) return;
+    const inst = new Cls(Object.assign({}, PROPS[name] || {}));
+    const draw = () => {
+      const vals = inst.renderVals ? (inst.renderVals() || {}) : {};
+      const out = [];
+      renderNodes(tpl.content.childNodes, vals, out);
+      patch(screenEl, out);
+    };
+    inst.__rerender = draw;
+    screenEl.innerHTML = '';
+    draw();
+    if (inst.componentDidMount) inst.componentDidMount();
+    current = name;
+    jump.value = name;
+  }
+  go = mount;
+
+  jump.addEventListener('change', () => mount(jump.value));
+  document.getElementById('restart').addEventListener('click', () => mount('Verify'));
+
+  function fit() {
+    const avail = window.innerHeight - document.querySelector('.bar').offsetHeight - 24;
+    const s = Math.min(1, avail / 864, (window.innerWidth - 24) / 410);
+    const wrap = document.getElementById('wrap');
+    wrap.style.transform = 'scale(' + s + ')';
+    wrap.style.marginTop = '10px';
+  }
+  window.addEventListener('resize', fit);
+  fit();
+  mount('Verify');
+})();
+</script>
+</body>
+</html>
